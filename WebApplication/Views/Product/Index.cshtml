@@ -1,0 +1,26 @@
+﻿@model List<Product>
+<br />
+<a class="btn btn-primary" asp-controller="Product" asp-action="Create">Добавить</a>
+<table class="table">
+    <thead>
+        <tr>
+        <th>ID</th>
+        <th>Наименование</th>
+        <th>Категория</th>
+        <th>Вес</th>
+    </tr>
+    </thead>
+    <tbody>
+        @foreach (var product in Model)
+        {
+        <tr>
+            <td>@product.Id</td>
+            <td>@product.Name</td>
+            <td>@product.Category</td>
+            <td>@product.WeightKg</td>
+            <td><a class="btn btn-info" href="~/Product/Edit?id=@product.Id">Изменить</a></td>
+            <td><a class="btn btn-danger" href="~/Product/Delete?id=@product.Id">Удалить</a></td>
+        </tr>
+        }
+    </tbody>
+</table>

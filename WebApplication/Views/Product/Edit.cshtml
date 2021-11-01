@@ -1,0 +1,19 @@
+﻿@model Product
+<form asp-action="Edit" method="post" asp-controller="Product">
+    <div asp-validation-summary="All" />
+    <input type="hidden" asp-for="Id" />
+    <div asp-validation-summary="All" />
+    <label>Наименование</label>
+    <input class="form-control" asp-for="Name" />
+    <span asp-validation-for="Name"></span>
+    <br />
+    <label>Категория</label>
+    <input class="form-control" asp-for="Category" />
+    <span asp-validation-for="Category"></span>
+    <br />
+    <label>Вес</label>
+    <input class="form-control" asp-for="WeightKg" />
+    <span asp-validation-for="WeightKg"></span> <br />
+    <input class="btn btn-success" type="submit" title="Save" value="Сохранить" />
+    <a class="btn" asp-controller="Product" asp-action="Index">Назад</a>
+</form> 
