@@ -1,4 +1,4 @@
-﻿@model Product
+﻿@model WebApplication.Models.ViewModels.ProductViewModel
 <form asp-action="Edit" method="post" asp-controller="Product">
     <div asp-validation-summary="All" />
     <input type="hidden" asp-for="Id" />
@@ -7,13 +7,10 @@
     <input class="form-control" asp-for="Name" />
     <span asp-validation-for="Name"></span>
     <br />
-    <label>Категория</label>
-    <input class="form-control" asp-for="Category" />
-    <span asp-validation-for="Category"></span>
-    <br />
     <label>Вес</label>
     <input class="form-control" asp-for="WeightKg" />
     <span asp-validation-for="WeightKg"></span> <br />
+    <select class="form-control" asp-for="ProductCategoryId" asp-items="@Model.Categories"></select>
     <input class="btn btn-success" type="submit" title="Save" value="Сохранить" />
     <a class="btn" asp-controller="Product" asp-action="Index">Назад</a>
 </form> 

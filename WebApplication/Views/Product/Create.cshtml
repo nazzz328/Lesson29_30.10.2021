@@ -1,17 +1,15 @@
-﻿@model Product
+﻿@model WebApplication.Models.ViewModels.ProductViewModel
 <form asp-action="Create" method="post" asp-controller="Product">
     <div asp-validation-summary="All" />
     <label>Наименование</label>
     <input class="form-control" asp-for="Name" />
     <span asp-validation-for="Name"></span>
     <br />
-    <label>Категория</label>
-    <input class="form-control" asp-for="Category" />
-    <span asp-validation-for="Category"></span>
-    <br />
     <label>Вес</label>
     <input class="form-control" asp-for="WeightKg" />
     <span asp-validation-for="WeightKg"></span> <br />
+    <select data-live-search="true" class="form-control selectpicker" asp-for="ProductCategoryId" asp-items="@Model.Categories">
+    </select>
     <input class="btn btn-success" type="submit" title="Create" value="Создать" />
     <input class="btn btn-danger" type="reset" title="Reset" value="Очистить" />
 </form>

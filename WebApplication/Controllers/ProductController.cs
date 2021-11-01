@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
@@ -7,6 +8,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using WebApplication.Context;
 using WebApplication.Models;
+using WebApplication.Models.ViewModels;
 
 namespace WebApplication.Controllers
 {
@@ -17,26 +19,54 @@ namespace WebApplication.Controllers
         {
             _context = context;
         }
-        public async Task<IActionResult> IndexAsync()
+        public async Task<IActionResult> Index(int categoryId = 0)
         {
-            var result = await _context.Products.ToListAsync();
-            return View(result);
+            var result = _context.Products.AsQueryable();
+            if (categoryId > 0) result = result.Where(p => p.ProductCategoryId == categoryId).AsQueryable();
+            var productList = new List<ProductViewModel>();
+            foreach (var product in await result.ToListAsync())
+            {
+                productList.Add(new ProductViewModel
+                {
+                    Id = product.Id,
+                    Name = product.Name,
+                    WeightKg = product.WeightKg,
+                    ProductCategoryId = product.ProductCategoryId,
+                    ProductCategoryName = product.ProductCategory.Name
+                }); ;
+            }
+            return View(productList);
         }
         [HttpGet]
-        public IActionResult Create()
+        public async Task<IActionResult> Create()
         {
-            return View();
+            var product = new ProductViewModel
+            {
+                Categories = await _context
+                .ProductCategories
+                .Select(p => new SelectListItem { Value = p.Id.ToString(), Text = p.Name }).ToListAsync()
+            };
+            return View(product);
         }
 
         [HttpPost]
-        public async Task <IActionResult> Create(Product product, CancellationToken token)
+        public async Task <IActionResult> Create(ProductViewModel product, CancellationToken token)
         {
             if (!ModelState.IsValid)
             {
+                product.Categories = await _context
+                .ProductCategories
+                .Select(p => new SelectListItem { Value = p.Id.ToString(), Text = p.Name }).ToListAsync();
                 return View(product);
             }
-            _context.Products.Add(product);
-            await _context.SaveChangesAsync();
+            var productDB = new Product
+            {
+                Name = product.Name,
+                WeightKg = product.WeightKg,
+                ProductCategoryId = product.ProductCategoryId,
+            };
+            _context.Products.Add(productDB);
+            await _context.SaveChangesAsync(token);
             return RedirectToAction("Index");
         }
 
@@ -61,14 +91,24 @@ namespace WebApplication.Controllers
                 return RedirectToAction("Index");
             }
 
-            return View(product);
+            var result = new ProductViewModel
+            {
+                Id = product.Id,
+                Name = product.Name,
+                ProductCategoryId = product.ProductCategoryId,
+                Categories = await _context.ProductCategories.
+                    Select(p => new SelectListItem { Value = p.Id.ToString(), Text = p.Name }).ToListAsync()
+            };
+            return View(result);
         }
 
         [HttpPost]
-        public async Task<IActionResult> Edit(Product productModel)
+        public async Task<IActionResult> Edit(ProductViewModel productModel)
         {
             if (!ModelState.IsValid)
             {
+                productModel.Categories = await _context.ProductCategories.
+                    Select(p => new SelectListItem { Value = p.Id.ToString(), Text = p.Name }).ToListAsync();
                 return View(productModel);
             }
 
@@ -80,8 +120,8 @@ namespace WebApplication.Controllers
             }
 
             product.Name = productModel.Name;
-            product.Category = productModel.Category;
             product.WeightKg = productModel.WeightKg;
+            product.ProductCategoryId = productModel.ProductCategoryId;
 
             await _context.SaveChangesAsync();
 

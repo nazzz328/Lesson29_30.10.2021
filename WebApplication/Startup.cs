@@ -26,7 +26,8 @@ namespace WebApplication
         {
             services.AddDbContext<ProductDBContext>(option =>
             {
-                option.UseSqlServer(Configuration.GetConnectionString("Default"));
+                option.UseLazyLoadingProxies();
+                option.UseSqlite(Configuration.GetConnectionString("DefaultSqlite"));
             });
             services.AddControllersWithViews();
         }
